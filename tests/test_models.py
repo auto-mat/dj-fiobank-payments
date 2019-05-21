@@ -10,8 +10,6 @@ Tests for `dj-fiobank-payments` models module.
 
 from django.test import TestCase
 
-from dj_fiobank_payments import models
-
 
 class TestDj_fiobank_payments(TestCase):
 
