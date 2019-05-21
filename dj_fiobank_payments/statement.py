@@ -53,12 +53,7 @@ columns = [
 ]
 
 
-def print_missing_payment(payment):
-    print(", ".join(["'%s'" % str(payment[column]) for column in columns]))
-
-
 def parse(days_back=7):
-    print(", ".join(["'%s'" % column for column in columns]))
     client = fiobank.FioBank(token=settings.FIO_TOKEN)
     gen = client.period(
         datetime.datetime.now() - datetime.timedelta(days=days_back),
@@ -87,10 +82,7 @@ def parse(days_back=7):
                 if 'CZK' == payment['currency']:
                     order.paid_date = payment['date']
                     order.save()
-                else:
-                    print_missing_payment(payment)
             except Order.DoesNotExist:
-                print_missing_payment(payment)
                 order = None
             new_payment, created = Payment.objects.get_or_create(
                 ident=payment['transaction_id'],

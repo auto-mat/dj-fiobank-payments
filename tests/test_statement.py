@@ -27,8 +27,6 @@ from django.test import TestCase
 
 from model_mommy import mommy
 
-from .models import Order
-
 
 class TestPasswordForms(TestCase):
     @patch('fiobank.FioBank')
@@ -96,19 +94,18 @@ class TestPasswordForms(TestCase):
         order.refresh_from_db()
         self.assertEqual(order.paid_date, datetime.date(2017, 1, 1))
 
-    @patch('builtins.print', autospec=True, side_effect=print)
     @patch('fiobank.FioBank')
-    def test_parse_no_match_ammount_difference(self, fiobank, mock_logger):
+    def test_parse_no_match_ammount_difference(self, fiobank):
         """ Test no math if the ammount is out of 1 CZK margin """
         order = mommy.make("Order", variable_symbol="112233")
         order.total_amount = 123
         order.save()
         m = MagicMock()
         fiobank.return_value = m
-        for ammount in (121.9, 124.1):
+        for amount in (121.9, 124.1):
             m.period.return_value = [
                 {
-                    'amount': ammount,
+                    'amount': amount,
                     'variable_symbol': '000112233',
                     'specific_symbol': '124',
                     'account_number_full': '125',
@@ -128,10 +125,12 @@ class TestPasswordForms(TestCase):
                 },
             ]
             parse()
-            mock_logger.assert_called_with(
-                "'124', '125', 'type', '000112233', '%s', 'message', 'type', '2017-01-01', "
-                "'126', '127', '128', '129', '130', '130', 'CZK', '234234', 'Foo User'" % ammount,
-            )
+            payment = Payment.objects.get()
+            self.assertEquals(payment.amount, str(amount))
+            self.assertEquals(payment.message, 'message')
+            self.assertEquals(payment.user_identification, 'Foo User')
+            self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
+            payment = Payment.objects.all().delete()
 
     @patch('fiobank.FioBank')
     def test_parse_match_recipient_message(self, fiobank):
@@ -201,9 +200,8 @@ class TestPasswordForms(TestCase):
         self.assertEqual(payment.order, order)
         self.assertEquals(payment.amount, '123')
 
-    @patch('builtins.print', autospec=True, side_effect=print)
     @patch('fiobank.FioBank')
-    def test_parse_no_match(self, fiobank, mock_logger):
+    def test_parse_no_match(self, fiobank):
         m = MagicMock()
         fiobank.return_value = m
         m.period.return_value = [
@@ -228,16 +226,14 @@ class TestPasswordForms(TestCase):
             },
         ]
         parse()
-        mock_logger.assert_called_with(
-            "'124', '125', 'type', '112233', '123', 'message', 'type', '2017-01-01', "
-            "'126', '127', '128', '129', '130', '130', 'CZK', '234234', 'Foo User'",
-        )
         payment = Payment.objects.get()
         self.assertEquals(payment.amount, '123')
+        self.assertEquals(payment.message, 'message')
+        self.assertEquals(payment.user_identification, 'Foo User')
+        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
 
-    @patch('builtins.print', autospec=True, side_effect=print)
     @patch('fiobank.FioBank')
-    def test_parse_no_czk(self, fiobank, mock_logger):
+    def test_parse_no_czk(self, fiobank):
         order = mommy.make("Order", variable_symbol="112233")
         order.total_amount = 123
         order.save()
@@ -265,9 +261,8 @@ class TestPasswordForms(TestCase):
             },
         ]
         parse()
-        mock_logger.assert_called_with(
-            "'124', '125', 'type', '112233', '123', 'message', 'type', '2017-01-01', "
-            "'126', '127', '128', '129', '130', '130', 'USD', '234234', 'Foo User'",
-        )
         payment = Payment.objects.get()
         self.assertEquals(payment.amount, '123')
+        self.assertEquals(payment.message, 'message')
+        self.assertEquals(payment.user_identification, 'Foo User')
+        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
