@@ -117,7 +117,7 @@ class Payment(TimeStampedModel):
 
     def save(self, *args, **kwargs):
         """Update order when paid."""
-        super().save(*args, **kwargs)
+        super(Payment, self).save(*args, **kwargs)
 
         if self.order:
             self.order.update_paid_status()

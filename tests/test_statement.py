@@ -18,7 +18,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import datetime
-from unittest.mock import MagicMock, patch
+try:
+    from datetime import timezone
+    utc = datetime.timezone.utc
+except ImportError:
+    from pytz import timezone
+    utc = timezone("UTC")
+try:
+    from unittest.mock import MagicMock, patch
+except ImportError:
+    from mock import MagicMock, patch
 
 from dj_fiobank_payments.models import Payment
 from dj_fiobank_payments.statement import parse
@@ -129,7 +138,7 @@ class TestPasswordForms(TestCase):
             self.assertEquals(payment.amount, str(amount))
             self.assertEquals(payment.message, 'message')
             self.assertEquals(payment.user_identification, 'Foo User')
-            self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
+            self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=utc))
             payment = Payment.objects.all().delete()
 
     @patch('fiobank.FioBank')
@@ -230,7 +239,7 @@ class TestPasswordForms(TestCase):
         self.assertEquals(payment.amount, '123')
         self.assertEquals(payment.message, 'message')
         self.assertEquals(payment.user_identification, 'Foo User')
-        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
+        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=utc))
 
     @patch('fiobank.FioBank')
     def test_parse_no_czk(self, fiobank):
@@ -265,4 +274,4 @@ class TestPasswordForms(TestCase):
         self.assertEquals(payment.amount, '123')
         self.assertEquals(payment.message, 'message')
         self.assertEquals(payment.user_identification, 'Foo User')
-        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=datetime.timezone.utc))
+        self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=utc))
