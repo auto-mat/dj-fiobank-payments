@@ -17,7 +17,7 @@ STATUS_CHOICES = (
 )
 
 
-class Payment(TimeStampedModel):
+class FioPayment(TimeStampedModel):
     """Stores payments."""
 
     ident = models.CharField(
@@ -107,17 +107,17 @@ class Payment(TimeStampedModel):
         null=True,
         verbose_name=_("Purchase order"),
         help_text=_("Which order is this payment related to?"),
-        related_name='payments',
+        related_name='fio_payments',
         on_delete=models.CASCADE,
     )
 
     def __str__(self):
         """Return name as string representation."""
-        return "Payment from %s" % self.received_at
+        return "FioPayment from %s" % self.received_at
 
     def save(self, *args, **kwargs):
         """Update order when paid."""
-        super(Payment, self).save(*args, **kwargs)
+        super(FioPayment, self).save(*args, **kwargs)
 
         if self.order:
             self.order.update_paid_status()
@@ -137,7 +137,7 @@ class AbstractOrder(TimeStampedModel):
         default=0,
     )
     paid_date = models.DateField(
-        verbose_name=_("Payment date"),
+        verbose_name=_("rioPayment date"),
         default=None,
         null=True,
         blank=True,

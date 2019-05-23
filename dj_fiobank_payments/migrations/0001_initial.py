@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name='FioPayment',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('message', models.TextField(blank=True, max_length=255, null=True, verbose_name='Message')),
                 ('status', models.CharField(choices=[('in_progress', 'In progress'), ('paid', 'Paid'), ('cancelled', 'Cancelled')], default='in_progress', max_length=255)),
                 ('user_identification', models.CharField(blank=True, help_text='User identification given by the bank', max_length=255, null=True, verbose_name='User identification')),
-                ('order', models.ForeignKey(settings.FIOBANK_PAYMENTS_ORDER_MODEL, blank=True, help_text='Which order is this payment related to?', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='payments', verbose_name='Purchase order')),
+                ('order', models.ForeignKey(settings.FIOBANK_PAYMENTS_ORDER_MODEL, blank=True, help_text='Which order is this payment related to?', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='fio_payments', verbose_name='Purchase order')),
             ],
             options={
                 'abstract': False,

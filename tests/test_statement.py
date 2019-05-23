@@ -29,7 +29,7 @@ try:
 except ImportError:
     from mock import MagicMock, patch
 
-from dj_fiobank_payments.models import Payment
+from dj_fiobank_payments.models import FioPayment
 from dj_fiobank_payments.statement import parse
 
 from django.test import TestCase
@@ -134,12 +134,12 @@ class TestPasswordForms(TestCase):
                 },
             ]
             parse()
-            payment = Payment.objects.get()
+            payment = FioPayment.objects.get()
             self.assertEquals(payment.amount, str(amount))
             self.assertEquals(payment.message, 'message')
             self.assertEquals(payment.user_identification, 'Foo User')
             self.assertEquals(payment.received_at, datetime.datetime(2017, 1, 1, 6, 0, tzinfo=utc))
-            payment = Payment.objects.all().delete()
+            payment = FioPayment.objects.all().delete()
 
     @patch('fiobank.FioBank')
     def test_parse_match_recipient_message(self, fiobank):
@@ -204,7 +204,7 @@ class TestPasswordForms(TestCase):
         ]
         parse()
         order.refresh_from_db()
-        payment = Payment.objects.get()
+        payment = FioPayment.objects.get()
         self.assertEqual(order.paid_date, datetime.date(2017, 1, 1))
         self.assertEqual(payment.order, order)
         self.assertEquals(payment.amount, '123')
@@ -235,7 +235,7 @@ class TestPasswordForms(TestCase):
             },
         ]
         parse()
-        payment = Payment.objects.get()
+        payment = FioPayment.objects.get()
         self.assertEquals(payment.amount, '123')
         self.assertEquals(payment.message, 'message')
         self.assertEquals(payment.user_identification, 'Foo User')
@@ -270,7 +270,7 @@ class TestPasswordForms(TestCase):
             },
         ]
         parse()
-        payment = Payment.objects.get()
+        payment = FioPayment.objects.get()
         self.assertEquals(payment.amount, '123')
         self.assertEquals(payment.message, 'message')
         self.assertEquals(payment.user_identification, 'Foo User')

@@ -26,7 +26,7 @@ from django.conf import settings
 
 import fiobank
 
-from .models import Payment
+from .models import FioPayment
 Order = django.apps.apps.get_model(*settings.FIOBANK_PAYMENTS_ORDER_MODEL.split('.', 1))
 
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ def parse(days_back=7):
                     order.save()
             except Order.DoesNotExist:
                 order = None
-            new_payment, created = Payment.objects.get_or_create(
+            new_payment, created = FioPayment.objects.get_or_create(
                 ident=payment['transaction_id'],
                 defaults={
                     'message': payment['recipient_message'],
