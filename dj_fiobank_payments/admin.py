@@ -11,6 +11,7 @@ class PaymentAdmin(admin.ModelAdmin):
         'ident',
         'order',
         'user_identification',
+        'status',
         'symvar',
         'symcon',
         'symspc',
@@ -20,8 +21,32 @@ class PaymentAdmin(admin.ModelAdmin):
         'message',
         'currency',
         'received_at',
+        'note',
     )
-    list_filter = ('bank',)
+    list_filter = (
+        'bank',
+        'order',
+        'status',
+    )
+    list_editable = (
+        'note',
+    )
+    search_fields = (
+        'ident',
+        'order__id',
+        'user_identification',
+        'status',
+        'symvar',
+        'symcon',
+        'symspc',
+        'amount',
+        'sender',
+        'bank',
+        'message',
+        'currency',
+        'received_at',
+        'note',
+    )
 
     def get_readonly_fields(self, request, obj=None):
         """Define all read only fields."""

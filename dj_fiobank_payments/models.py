@@ -9,11 +9,13 @@ from model_utils.models import TimeStampedModel
 STATUS_IN_PROGRESS = 'in_progress'
 STATUS_PAID = 'paid'
 STATUS_CANCELLED = 'cancelled'
+STATUS_UNRELATED = 'unrelated'
 
 STATUS_CHOICES = (
     (STATUS_IN_PROGRESS, _('In progress')),
     (STATUS_PAID, _('Paid')),
     (STATUS_CANCELLED, _('Cancelled')),
+    (STATUS_UNRELATED, _('Unrelated')),
 )
 
 
@@ -109,6 +111,12 @@ class FioPayment(TimeStampedModel):
         help_text=_("Which order is this payment related to?"),
         related_name='fio_payments',
         on_delete=models.CASCADE,
+    )
+    note = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("Note"),
     )
 
     def __str__(self):
