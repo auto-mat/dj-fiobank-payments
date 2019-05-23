@@ -47,10 +47,8 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='dj-fiobank-payments',
     version=version,
-    description="""
-    Retrieve payments from Fio bank API (through fiobank package)
-    and parse them into Payment objects.
-    """,
+    description="""Retrieve payments from Fio bank API (through fiobank package) """
+    """and parse them into Payment objects.""",
     long_description=readme + '\n\n' + history,
     author='Petr Dlouhý',
     author_email='petr.dlouhy@email.cz',
