@@ -1,10 +1,10 @@
 
 from django.contrib import admin
 
-from .models import Payment
+from .models import FioPayment
 
 
-@admin.register(Payment)
+@admin.register(FioPayment)
 class PaymentAdmin(admin.ModelAdmin):
     """Admin model for Payments."""
     list_display = (
